@@ -5,3 +5,5 @@ terraform.tfstate.backup
 .crash/
 *.tfplan
 *.tfstate.*
+*.tfvars
+*.tfvars.json
