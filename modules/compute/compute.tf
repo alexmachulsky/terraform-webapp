@@ -52,7 +52,7 @@ resource "aws_instance" "webapp_1" {
   user_data                   = templatefile("${path.root}/${var.user_data_file}", {})
 
   tags = {
-    Name = "webapp-1"
+    Name = "${terraform.workspace}-webapp-1"
   }
 }
 resource "aws_instance" "webapp_2" {
@@ -65,7 +65,7 @@ resource "aws_instance" "webapp_2" {
   user_data                   = templatefile("${path.root}/${var.user_data_file}", {})
 
   tags = {
-    Name = "webapp-2"
+    Name = "${terraform.workspace}-webapp-2"
   }
 
 }
