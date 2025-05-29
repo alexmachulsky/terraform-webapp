@@ -1,28 +1,15 @@
-# AWS Region
-variable "region" {
+variable "vpc_id" {
   type = string
 }
 
-# VPC CIDR Block
-variable "vpc_cidr" {
+variable "subnet1_id" {
   type = string
 }
 
-# Subnet Definitions
-variable "subnet1_cidr" {
-  type = string
-}
-variable "subnet1_az" {
-  type = string
-}
-variable "subnet2_cidr" {
-  type = string
-}
-variable "subnet2_az" {
+variable "subnet2_id" {
   type = string
 }
 
-# EC2 Instance Settings
 variable "ami_id" {
   type = string
 }
@@ -35,7 +22,6 @@ variable "user_data_file" {
   type = string
 }
 
-# Application Load Balancer (ALB)
 variable "alb_name" {
   type = string
 }
