@@ -23,6 +23,7 @@ resource "aws_subnet" "webapp-subnet_1" {
 }
 
 resource "aws_subnet" "webapp-subnet_2" {
+  count                   = var.create_second_subnet ? 1 : 0
   vpc_id                  = aws_vpc.webapp-vpc.id
   cidr_block              = var.subnet2_cidr
   availability_zone       = var.subnet2_az
@@ -49,6 +50,7 @@ resource "aws_route_table_association" "a" {
 }
 
 resource "aws_route_table_association" "b" {
-  subnet_id      = aws_subnet.webapp-subnet_2.id
+  count          = var.create_second_subnet ? 1 : 0
+  subnet_id      = aws_subnet.webapp-subnet_2[0].id
   route_table_id = aws_route_table.webapp-route-table.id
 }

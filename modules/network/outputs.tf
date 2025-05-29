@@ -7,5 +7,5 @@ output "subnet1_id" {
 }
 
 output "subnet2_id" {
-  value = aws_subnet.webapp-subnet_2.id
+  value = var.create_second_subnet ? aws_subnet.webapp-subnet_2[0].id : null
 }

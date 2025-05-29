@@ -33,3 +33,8 @@ variable "target_group_name" {
 variable "alb_port" {
   type = number
 }
+
+variable "create_second_instance" {
+  type    = bool
+  default = true
+}

@@ -2,7 +2,7 @@
 resource "aws_security_group" "webapp_sg" {
   name        = "Allow_port_22_and_80"
   description = "Allow SSH and web traffic"
-  vpc_id      = var.vpc_id # משתנה במקום גישה ישירה
+  vpc_id      = var.vpc_id
 
   ingress {
     from_port   = 22
@@ -26,22 +26,48 @@ resource "aws_security_group" "webapp_sg" {
   }
 }
 
-resource "aws_instance" "webapp" {
-  for_each = {
-    webapp-1 = var.subnet1_id
-    webapp-2 = var.subnet2_id
-  }
+# resource "aws_instance" "webapp" {
+#   for_each = {
+#     webapp-1 = var.subnet1_id,
+#     webapp-2 = var.subnet2_id
+#   }
+#   ami                         = var.ami_id
+#   instance_type               = var.instance_type
+#   subnet_id                   = each.value
+#   vpc_security_group_ids      = [aws_security_group.webapp_sg.id]
+#   associate_public_ip_address = true
+#   user_data                   = templatefile("${path.root}/${var.user_data_file}", {})
 
+#   tags = {
+#     Name = each.key
+#   }
+# }
+
+resource "aws_instance" "webapp_1" {
   ami                         = var.ami_id
   instance_type               = var.instance_type
-  subnet_id                   = each.value
+  subnet_id                   = var.subnet1_id
   vpc_security_group_ids      = [aws_security_group.webapp_sg.id]
   associate_public_ip_address = true
   user_data                   = templatefile("${path.root}/${var.user_data_file}", {})
 
   tags = {
-    Name = each.key
+    Name = "webapp-1"
   }
+}
+resource "aws_instance" "webapp_2" {
+  count                       = var.create_second_instance ? 1 : 0
+  ami                         = var.ami_id
+  instance_type               = var.instance_type
+  subnet_id                   = var.subnet2_id
+  vpc_security_group_ids      = [aws_security_group.webapp_sg.id]
+  associate_public_ip_address = true
+  user_data                   = templatefile("${path.root}/${var.user_data_file}", {})
+
+  tags = {
+    Name = "webapp-2"
+  }
+
 }
 
 ## ALB Target Group Attachment
@@ -62,11 +88,24 @@ resource "aws_lb_target_group" "webapp_tg" {
   }
 }
 
-resource "aws_lb_target_group_attachment" "attachments" {
-  for_each = aws_instance.webapp
+# resource "aws_lb_target_group_attachment" "attachments" {
+#   for_each = aws_instance.webapp
 
+#   target_group_arn = aws_lb_target_group.webapp_tg.arn
+#   target_id        = each.value.id
+#   port             = var.alb_port
+# }
+
+resource "aws_lb_target_group_attachment" "webapp_1" {
   target_group_arn = aws_lb_target_group.webapp_tg.arn
-  target_id        = each.value.id
+  target_id        = aws_instance.webapp_1.id
+  port             = var.alb_port
+}
+
+resource "aws_lb_target_group_attachment" "webapp_2" {
+  count            = var.create_second_instance ? 1 : 0
+  target_group_arn = aws_lb_target_group.webapp_tg.arn
+  target_id        = aws_instance.webapp_2[0].id
   port             = var.alb_port
 }
 
@@ -75,9 +114,11 @@ resource "aws_lb" "webapp_alb" {
   internal           = false
   load_balancer_type = "application"
   security_groups    = [aws_security_group.webapp_sg.id]
-  subnets = [
+  subnets = var.create_second_instance && var.subnet2_id != null ? [
     var.subnet1_id,
     var.subnet2_id
+    ] : [
+    var.subnet1_id
   ]
 
   tags = {

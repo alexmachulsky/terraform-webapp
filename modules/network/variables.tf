@@ -21,3 +21,8 @@ variable "subnet2_cidr" {
 variable "subnet2_az" {
   type = string
 }
+
+variable "create_second_subnet" {
+  type    = bool
+  default = true
+}

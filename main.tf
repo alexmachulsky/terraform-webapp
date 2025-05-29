@@ -6,6 +6,8 @@ module "network" {
   subnet2_cidr = var.subnet2_cidr
   subnet1_az   = var.subnet1_az
   subnet2_az   = var.subnet2_az
+
+  create_second_subnet = var.create_second_subnet
 }
 
 module "compute" {
@@ -20,4 +22,22 @@ module "compute" {
   vpc_id     = module.network.vpc_id
   subnet1_id = module.network.subnet1_id
   subnet2_id = module.network.subnet2_id
+
+  create_second_instance = var.create_second_instance
+}
+
+# output "public_ips" {
+#   description = "Public IPs of the web application instances"
+#   value       = module.compute.public_ips
+# }
+output "webapp_1_ip" {
+  value = module.compute.webapp_1_ip
+}
+output "webapp_2_ip" {
+  value = module.compute.webapp_2_ip
+}
+
+output "alb_dns_name" {
+  description = "DNS name of the Application Load Balancer"
+  value       = module.compute.alb_dns_name
 }
