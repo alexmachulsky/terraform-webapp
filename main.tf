@@ -31,13 +31,30 @@ module "compute" {
 #   value       = module.compute.public_ips
 # }
 output "webapp_1_ip" {
-  value = module.compute.webapp_1_ip
+  description = "Public IP of the first web application instance"
+  value       = module.compute.webapp_1_ip
 }
 output "webapp_2_ip" {
-  value = module.compute.webapp_2_ip
+  description = "Public IP of the second web application instance"
+  value       = module.compute.webapp_2_ip
 }
 
 output "alb_dns_name" {
   description = "DNS name of the Application Load Balancer"
   value       = module.compute.alb_dns_name
+}
+
+output "vpc_id" {
+  description = "ID of the VPC"
+  value       = module.network.vpc_id
+}
+
+output "subnet1_id" {
+  description = "ID of the first subnet"
+  value       = module.network.subnet1_id
+
+}
+output "subnet2_id" {
+  description = "ID of the second subnet"
+  value       = module.network.subnet2_id
 }
